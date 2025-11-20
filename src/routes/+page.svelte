@@ -149,3 +149,33 @@
     </div>
   </div>
 </section>
+<section class="max-w-6xl mx-auto px-4 pb-16 pt-4">
+  <div class="bg-slate-900 text-slate-50 rounded-2xl px-6 py-7 md:px-8 md:py-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+    <div>
+      <p class="text-xs uppercase tracking-[0.25em] text-amber-300 mb-1">
+        PARA CONTRATISTAS Y TRABAJADORES
+      </p>
+      <h3 class="text-xl font-semibold mb-2">
+        ¿Ofreces servicios de construcción en Canadá?
+      </h3>
+      <p class="text-sm text-slate-200 max-w-xl">
+        Regístrate en nuestra plataforma para recibir solicitudes de trabajo,
+        mostrar tu experiencia y construir tu reputación con clientes reales.
+      </p>
+    </div>
+    <div class="flex gap-3">
+      <a
+        href="/auth/register"
+        class="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-amber-400 text-slate-900 text-sm font-semibold shadow hover:bg-amber-300"
+      >
+        Crear cuenta
+      </a>
+      <a
+        href="/auth/login"
+        class="inline-flex items-center justify-center px-6 py-2.5 rounded-full border border-slate-400 text-sm font-semibold hover:bg-slate-800/40"
+      >
+        Ya tengo cuenta
+      </a>
+    </div>
+  </div>
+</section>

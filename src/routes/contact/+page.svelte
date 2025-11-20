@@ -10,7 +10,6 @@
 </svelte:head>
 
 <section class="relative overflow-hidden bg-slate-50 text-slate-900">
-
   <!-- luces de fondo -->
   <div class="pointer-events-none absolute -top-24 left-0 h-64 w-64 rounded-full bg-sky-500/25 blur-3xl" />
   <div class="pointer-events-none absolute -bottom-28 right-0 h-72 w-72 rounded-full bg-amber-400/25 blur-3xl" />
@@ -19,18 +18,18 @@
     <!-- encabezado -->
     <div in:fade={{ duration: 250 }}>
       <p class="text-xs uppercase tracking-[0.25em] text-amber-600 mb-3">
-    CONTACTO
-</p>
+        CONTACTO
+      </p>
 
-<h1 class="text-3xl md:text-4xl font-extrabold mb-3 text-slate-950">
-    Hablemos de tu proyecto
-</h1>
+      <h1 class="text-3xl md:text-4xl font-extrabold mb-3 text-slate-950">
+        Hablemos de tu proyecto
+      </h1>
 
-<p class="text-sm md:text-base text-slate-700 max-w-2xl">
-    Déjanos un mensaje y con gusto te contactaremos para resolver dudas,
-    coordinar una visita o ayudarte a planear tu próxima obra o remodelación.
-</p>
-
+      <p class="text-sm md:text-base text-slate-700 max-w-2xl">
+        Déjanos un mensaje y con gusto te contactaremos para resolver dudas,
+        coordinar una visita o ayudarte a planear tu próxima obra o remodelación.
+      </p>
+    </div>
 
     <div class="grid lg:grid-cols-[2fr,1.1fr] gap-8 lg:gap-10 items-start">
       <!-- FORMULARIO -->
@@ -132,15 +131,43 @@
           <h2 class="text-base font-semibold mb-2 text-sky-100">
             Datos de contacto
           </h2>
+
           <ul class="text-sm text-slate-100/90 space-y-2">
             <li>
               <span class="font-semibold">Email:</span> info@goldconstruction.ca
             </li>
             <li>
-              <span class="font-semibold">Teléfono:</span> +1 (000) 000-0000
+              <span class="font-semibold">Teléfono:</span> +1 (437) 214-7837
             </li>
             <li>
-              <span class="font-semibold">Ubicación:</span> Ciudad / Provincia, Canadá
+              <span class="font-semibold">Facebook:</span>
+              <a
+                href="https://www.facebook.com/share/1BrUoocEKz/"
+                target="_blank"
+                class="text-amber-300 hover:text-amber-200 underline"
+              >
+                The Gold Construction
+              </a>
+            </li>
+            <li>
+              <span class="font-semibold">Instagram:</span>
+              <a
+                href="https://www.instagram.com/thegoldconstructionca?igsh=MXBpZHN5cWU2NzJxaw=="
+                target="_blank"
+                class="text-amber-300 hover:text-amber-200 underline"
+              >
+                @thegoldconstructionca
+              </a>
+            </li>
+            <li>
+              <span class="font-semibold">TikTok:</span>
+              <a
+                href="https://www.tiktok.com/@the.gold.construc?_r=1&_t=ZM-91Xg82e6KVf"
+                target="_blank"
+                class="text-amber-300 hover:text-amber-200 underline"
+              >
+                @the.gold.construc
+              </a>
             </li>
           </ul>
 
