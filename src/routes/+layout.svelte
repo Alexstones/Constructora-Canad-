@@ -29,12 +29,20 @@
       </a>
       <!-- FIN LOGO NUEVO -->
 
-      <!-- MENU -->
+      <!-- MENU PRINCIPAL -->
       <div class="hidden md:flex items-center gap-6 text-sm font-medium text-slate-700">
         <a href="/" class="hover:text-sky-700">Inicio</a>
         <a href="/services" class="hover:text-sky-700">Servicios</a>
         <a href="/request-quote" class="hover:text-sky-700">Cotización</a>
         <a href="/contact" class="hover:text-sky-700">Contacto</a>
+
+        <!-- BOTÓN “ERES TRABAJADOR?” (ÚNICO) -->
+        <a
+          href="/worker"
+          class="text-xs font-semibold px-4 py-2 rounded-full bg-amber-500 text-white shadow hover:bg-amber-600"
+        >
+          ¿Eres trabajador?
+        </a>
       </div>
 
       <!-- LOGIN / REGISTER -->
@@ -42,7 +50,7 @@
         {#if data?.user}
           <!-- Cuando el usuario está logueado -->
           <a
-            href="/dashboard"
+            href="/worker/dashboard"
             class="text-xs font-semibold text-slate-700 hover:text-sky-700"
           >
             Mi cuenta
@@ -121,3 +129,5 @@
     </p>
   </footer>
 </div>
+
+
