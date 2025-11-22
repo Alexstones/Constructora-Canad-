@@ -11,8 +11,8 @@
 
 <section class="relative overflow-hidden bg-gradient-to-b from-sky-900 via-slate-950 to-slate-900 text-slate-50">
   <!-- luces de fondo -->
-  <div class="pointer-events-none absolute -top-24 -left-10 h-64 w-64 rounded-full bg-amber-400/20 blur-3xl" />
-  <div class="pointer-events-none absolute -bottom-28 right-0 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl" />
+  <div class="pointer-events-none absolute -top-24 -left-10 h-64 w-64 rounded-full bg-amber-400/20 blur-3xl"></div>
+  <div class="pointer-events-none absolute -bottom-28 right-0 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl"></div>
 
   <div class="relative max-w-6xl mx-auto px-4 py-12 md:py-16 space-y-10">
     <!-- encabezado -->
@@ -35,6 +35,12 @@
         {#if form?.success}
           <div class="mb-4 rounded-xl border border-emerald-300/70 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow">
             ✅ Hemos recibido tu solicitud. En breve nos pondremos en contacto contigo.
+          </div>
+        {/if}
+
+        {#if form?.errors?.global}
+          <div class="mb-4 rounded-xl border border-red-400/80 bg-red-500/15 px-4 py-3 text-sm text-red-100 shadow">
+            {form.errors.global}
           </div>
         {/if}
 
@@ -113,7 +119,7 @@
             <div class="grid md:grid-cols-2 gap-5">
               <div>
                 <label class="block text-xs font-semibold tracking-wide text-slate-200 mb-1.5">
-                  Tipo de servicio
+                  Tipo de servicio *
                 </label>
                 <select
                   name="service"
@@ -127,6 +133,9 @@
                   <option value="repairs">Reparaciones / mantenimiento</option>
                   <option value="full-project">Proyecto completo / otro</option>
                 </select>
+                {#if form?.errors?.service}
+                  <p class="mt-1 text-xs font-semibold text-amber-300">{form.errors.service}</p>
+                {/if}
               </div>
 
               <div>
