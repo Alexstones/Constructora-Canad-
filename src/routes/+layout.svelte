@@ -35,20 +35,31 @@
         <a href="/services" class="hover:text-sky-700">Servicios</a>
         <a href="/request-quote" class="hover:text-sky-700">Cotización</a>
         <a href="/contact" class="hover:text-sky-700">Contacto</a>
+      </div>
 
-        <!-- BOTÓN “ERES TRABAJADOR?” (ÚNICO) -->
+      <!-- ACCIONES DERECHA -->
+      <div class="hidden md:flex items-center gap-3">
+        <!-- Botón para trabajadores (visible siempre) -->
         <a
           href="/worker"
-          class="text-xs font-semibold px-4 py-2 rounded-full bg-amber-500 text-white shadow hover:bg-amber-600"
+          class="text-xs font-semibold px-4 py-2 rounded-full bg-amber-500 text-slate-900 shadow hover:bg-amber-400"
         >
           ¿Eres trabajador?
         </a>
-      </div>
 
-      <!-- LOGIN / REGISTER -->
-      <div class="hidden md:flex items-center gap-4">
         {#if data?.user}
-          <!-- Cuando el usuario está logueado -->
+          <!-- Si está logueado -->
+
+          {#if data?.userRole?.is_admin}
+            <!-- Botón ADMIN solo para admins -->
+            <a
+              href="/admin"
+              class="text-xs font-semibold px-4 py-2 rounded-full bg-slate-900 text-amber-300 border border-amber-400/70 shadow hover:bg-slate-800"
+            >
+              Admin
+            </a>
+          {/if}
+
           <a
             href="/worker/dashboard"
             class="text-xs font-semibold text-slate-700 hover:text-sky-700"
@@ -81,7 +92,7 @@
           </a>
         {/if}
       </div>
-      <!-- FIN LOGIN / REGISTER -->
+      <!-- FIN ACCIONES DERECHA -->
 
     </div>
   </nav>
@@ -129,5 +140,3 @@
     </p>
   </footer>
 </div>
-
-

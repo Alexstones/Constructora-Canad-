@@ -1,70 +1,84 @@
-// src/routes/request-quote/+page.server.ts
-import type { Actions } from './$types';
-import { fail } from '@sveltejs/kit';
+import type { Actions, PageServerLoad } from './$types';
 import { supabase } from '$lib/server/supabaseClient';
+import { fail } from '@sveltejs/kit';
+
+export const load: PageServerLoad = async () => {
+  // De momento no necesitamos nada extra en el load
+  return {};
+};
 
 export const actions: Actions = {
-  default: async ({ request, locals }) => {
+  default: async ({ request }) => {
     const data = await request.formData();
 
-    const name = (data.get('name') ?? '').toString().trim();
-    const email = (data.get('email') ?? '').toString().trim();
-    const phone = (data.get('phone') ?? '').toString().trim();
-    const city = (data.get('city') ?? '').toString().trim();
-    const service = (data.get('service') ?? '').toString().trim();
-    const budget = (data.get('budget') ?? '').toString().trim();
-    const startDate = (data.get('startDate') ?? '').toString().trim();
-    const details = (data.get('details') ?? '').toString().trim();
+    const name = data.get('name')?.toString().trim() || '';
+    const email = data.get('email')?.toString().trim() || '';
+    const phone = data.get('phone')?.toString().trim() || '';
+    const city = data.get('city')?.toString().trim() || '';
+    const service = data.get('service')?.toString().trim() || '';
+    const budget = data.get('budget')?.toString().trim() || '';
+    const startDate = data.get('startDate')?.toString().trim() || '';
+    const details = data.get('details')?.toString().trim() || '';
+
+    const values = {
+      name,
+      email,
+      phone,
+      city,
+      service,
+      budget,
+      startDate,
+      details
+    };
 
     const errors: Record<string, string> = {};
 
-    if (!name) errors.name = 'Por favor escribe tu nombre.';
-    if (!email) errors.email = 'Por favor escribe tu correo.';
+    if (!name) errors.name = 'Ingresa tu nombre.';
+    if (!email) errors.email = 'Ingresa tu correo.';
     if (!details) errors.details = 'Cuéntanos un poco sobre tu proyecto.';
-    if (!service) errors.service = 'Selecciona un tipo de servicio.';
 
     if (Object.keys(errors).length > 0) {
       return fail(400, {
         success: false,
         errors,
-        values: { name, email, phone, city, service, budget, startDate, details }
+        values
       });
     }
 
-    // Si el usuario está logueado, guardamos su id; si no, lo dejamos null
-    const clientId = locals.user?.id ?? null;
-
-    const { error } = await supabase
-      .from('jobs')
-      .insert({
-        client_id: clientId,
-        client_name: name,
-        client_email: email,
-        client_phone: phone || null,
+    // Insertar en la tabla quote_requests
+    const { error } = await supabase.from('quote_requests').insert([
+      {
+        name,
+        email,
+        phone: phone || null,
         city: city || null,
-        service_type: service || null,
+        service: service || null,
         budget_range: budget || null,
-        start_date_text: startDate || null,
-        description: details,
-        status: 'open'
-      });
+        start_date: startDate || null,
+        details,
+        status: 'new',
+        source: 'web'
+      }
+    ]);
 
     if (error) {
-      console.error('Error insertando job desde cotización:', error);
+      console.error('Error guardando quote_request:', error);
       return fail(500, {
         success: false,
         errors: {
-          global:
-            'Ocurrió un problema al guardar tu solicitud. Inténtalo de nuevo en unos minutos.'
+          general:
+            'Hubo un problema al guardar tu solicitud. Intenta de nuevo en unos minutos.'
         },
-        values: { name, email, phone, city, service, budget, startDate, details }
+        values
       });
     }
 
-    // Respuesta OK para el form (SvelteKit + enhance)
+    // Éxito: limpiamos valores y mandamos mensaje
     return {
-      success: true
+      success: true,
+      message:
+        'Hemos recibido tu solicitud. En breve nos pondremos en contacto contigo.',
+      values: {}
     };
   }
 };
-

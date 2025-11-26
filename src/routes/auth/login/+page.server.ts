@@ -1,47 +1,78 @@
-import type { Actions } from './$types';
+// src/routes/auth/login/+page.server.ts
+import type { Actions, PageServerLoad } from './$types';
+import { fail, redirect, error } from '@sveltejs/kit';
 import { supabase } from '$lib/server/supabaseClient';
 
+const cookieOptions = {
+  path: '/',
+  httpOnly: true,
+  sameSite: 'lax' as const,
+  secure: false, // ponlo en true en producción con HTTPS
+  maxAge: 60 * 60 * 24 * 7 // 7 días
+};
+
+export const load: PageServerLoad = async () => {
+  // solo mostramos el formulario
+  return {};
+};
+
 export const actions: Actions = {
-  default: async ({ request }) => {
-    const data = await request.formData();
+  default: async ({ request, cookies }) => {
+    const formData = await request.formData();
+    const email = String(formData.get('email') ?? '');
+    const password = String(formData.get('password') ?? '');
 
-    const email = data.get('email')?.toString().trim() || '';
-    const password = data.get('password')?.toString() || '';
-
-    const errors: Record<string, string> = {};
-
-    if (!email) errors.email = 'Ingresa tu correo.';
-    if (!password) errors.password = 'Ingresa tu contraseña.';
-
-    if (Object.keys(errors).length > 0) {
-      return {
-        success: false,
-        errors,
-        values: { email }
-      };
+    if (!email || !password) {
+      return fail(400, {
+        message: 'Email y contraseña son obligatorios',
+        email
+      });
     }
 
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    // LOGIN con el cliente de servidor
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password
     });
 
-    if (signInError || !signInData.session) {
-      console.error('Error en login:', signInError);
-      return {
-        success: false,
-        errors: {
-          email: 'Correo o contraseña incorrectos.'
-        },
-        values: { email }
-      };
+    if (authError || !data.user) {
+      console.error('Error login:', authError);
+      return fail(400, {
+        message: 'Credenciales incorrectas',
+        email
+      });
     }
 
-    // De momento solo confirmamos login en consola
-    console.log('LOGIN OK, user id:', signInData.user?.id);
+    console.log('LOGIN OK, user id:', data.user.id);
 
-    return {
-      success: true
-    };
+    // Ver rol en user_roles
+    const { data: roleData, error: roleError } = await supabase
+      .from('user_roles')
+      .select('is_admin')
+      .eq('user_id', data.user.id)
+      .maybeSingle();
+
+    if (roleError) {
+      console.error('Error obteniendo rol de admin en login:', roleError);
+      throw error(500, 'No se pudo verificar el rol del usuario');
+    }
+
+    const userEmail = data.user.email ?? email;
+
+    // Guardamos email y rol en cookies
+    cookies.set('session_email', userEmail, cookieOptions);
+    cookies.set(
+      'session_role',
+      roleData?.is_admin ? 'admin' : 'worker',
+      cookieOptions
+    );
+
+    if (roleData?.is_admin) {
+      console.log('Es admin, enviando a /admin...');
+      throw redirect(303, '/admin');
+    }
+
+    console.log('No es admin, enviando a /worker/dashboard...');
+    throw redirect(303, '/worker/dashboard');
   }
 };
