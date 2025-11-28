@@ -2,7 +2,28 @@
   import { enhance } from '$app/forms';
 
   export let form: any;
-  export let data: any;
+  export let data: {
+    profile: {
+      id: number;
+      user_id: string;
+      full_name: string | null;
+      city: string | null;
+      phone: string | null;
+      services: string[] | null;
+      years_experience: number | null;
+      worker_type: string | null;
+      certs: string[] | null;
+      bio: string | null;
+      created_at: string | null;
+      updated_at: string | null;
+    } | null;
+  };
+
+  const profileServices: string[] = data?.profile?.services ?? [];
+  const profileCerts: string[] = data?.profile?.certs ?? [];
+
+  let workerTypeValue =
+    form?.values?.worker_type ?? data?.profile?.worker_type ?? 'independent';
 </script>
 
 <svelte:head>
@@ -29,11 +50,19 @@
 
     {#if form?.success}
       <div class="mb-4 rounded-xl border border-emerald-300/70 bg-emerald-500/15 px-4 py-3 text-sm text-emerald-50 shadow">
-        ✅ Perfil guardado (demo). Más adelante conectaremos esto directo con Supabase.
+        ✅ Perfil guardado correctamente. Ya apareces en el listado de contratistas.
       </div>
     {/if}
 
-    <div class="p-[3px] rounded-3xl bg-gradient-to-r from-sky-500 via-amber-400 to-emerald-400 shadow-2xl shadow-sky-900/60">
+    {#if form?.errors?.general}
+      <div class="mb-4 rounded-xl border border-red-400/70 bg-red-500/15 px-4 py-3 text-sm text-red-100 shadow">
+        {form.errors.general}
+      </div>
+    {/if}
+
+    <div
+      class="p-[3px] rounded-3xl bg-gradient-to-r from-sky-500 via-amber-400 to-emerald-400 shadow-2xl shadow-sky-900/60"
+    >
       <form
         method="POST"
         use:enhance
@@ -109,7 +138,9 @@
           </div>
 
           <!-- “Foto” placeholder -->
-          <div class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-600 bg-slate-900/70 px-4 py-6 text-center text-xs text-slate-400">
+          <div
+            class="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-600 bg-slate-900/70 px-4 py-6 text-center text-xs text-slate-400"
+          >
             <p class="font-semibold text-slate-100 mb-1">
               Foto de perfil
             </p>
@@ -130,6 +161,11 @@
           <p class="text-xs font-semibold tracking-wide text-slate-200">
             Servicios que ofreces *
           </p>
+          {#if form?.errors?.services}
+            <p class="text-[11px] font-semibold text-amber-300">
+              {form.errors.services}
+            </p>
+          {/if}
           <div class="grid md:grid-cols-2 gap-3 text-xs text-slate-100">
             <label class="flex items-center gap-2">
               <input
@@ -137,6 +173,7 @@
                 name="services"
                 value="drywall"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileServices.includes('drywall')}
               />
               Drywall / Framing
             </label>
@@ -146,6 +183,7 @@
                 name="services"
                 value="painting"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileServices.includes('painting')}
               />
               Pintura interior / exterior
             </label>
@@ -155,6 +193,7 @@
                 name="services"
                 value="insulation"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileServices.includes('insulation')}
               />
               Insulación
             </label>
@@ -164,6 +203,7 @@
                 name="services"
                 value="repairs"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileServices.includes('repairs')}
               />
               Reparaciones / mantenimiento
             </label>
@@ -173,6 +213,7 @@
                 name="services"
                 value="full_renovations"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileServices.includes('full_renovations')}
               />
               Remodelaciones completas
             </label>
@@ -197,6 +238,11 @@
               placeholder="Ej. 5"
               value={form?.values?.years_experience ?? data?.profile?.years_experience ?? ''}
             />
+            {#if form?.errors?.years_experience}
+              <p class="mt-1 text-xs font-semibold text-amber-300">
+                {form.errors.years_experience}
+              </p>
+            {/if}
           </div>
 
           <div>
@@ -209,6 +255,7 @@
             <select
               id="worker_type"
               name="worker_type"
+              bind:value={workerTypeValue}
               class="w-full rounded-lg border border-slate-700 bg-slate-900/80 px-3.5 py-2.5 text-sm text-slate-50 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-300/60"
             >
               <option value="independent">Independiente / freelancer</option>
@@ -231,6 +278,7 @@
                 name="certs"
                 value="whmis"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileCerts.includes('whmis')}
               />
               WHMIS
             </label>
@@ -240,6 +288,7 @@
                 name="certs"
                 value="working_at_heights"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileCerts.includes('working_at_heights')}
               />
               Working at Heights
             </label>
@@ -249,6 +298,7 @@
                 name="certs"
                 value="wsib"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileCerts.includes('wsib')}
               />
               WSIB / Insurance
             </label>
@@ -258,6 +308,7 @@
                 name="certs"
                 value="first_aid"
                 class="rounded border-slate-500 bg-slate-900"
+                checked={profileCerts.includes('first_aid')}
               />
               First Aid / CPR
             </label>
@@ -303,4 +354,3 @@
     </div>
   </div>
 </section>
-

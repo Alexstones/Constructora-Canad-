@@ -37,6 +37,13 @@
         <a href="/contact" class="hover:text-sky-700">Contacto</a>
       </div>
 
+ <!-- NUEVO: botón/link para el marketplace de contratistas -->
+  <a href="/find-contractor" class="hover:text-sky-700">
+    Encuentra contratistas
+  </a>
+
+  
+
       <!-- ACCIONES DERECHA -->
       <div class="hidden md:flex items-center gap-3">
         <!-- Botón para trabajadores (visible siempre) -->

@@ -1,7 +1,11 @@
+<!-- src/routes/admin/workers/+page.svelte -->
 <script lang="ts">
   export let data: {
+    // userEmail viene del layout /admin (si lo usas allí)
+    userEmail?: string;
     profiles: {
-      id: string;
+      id: number;
+      user_id: string;
       full_name: string | null;
       city: string | null;
       phone: string | null;
@@ -11,8 +15,10 @@
       certs: string[] | null;
       bio: string | null;
       created_at: string | null;
+      updated_at: string | null;
+      is_approved: boolean;
     }[];
-    loadError?: boolean;
+    error?: string;
   };
 
   const workerTypeLabel: Record<string, string> = {
@@ -21,173 +27,96 @@
     subcontractor: 'Subcontratista',
     company: 'Empresa registrada'
   };
-
-  // Filtros simples en el cliente (por ahora solo texto general)
-  let search = '';
-  let cityFilter = '';
-
-  $: filteredProfiles = data.profiles.filter((p) => {
-    const text = `
-      ${p.full_name ?? ''}
-      ${p.city ?? ''}
-      ${(p.services ?? []).join(' ')}
-      ${p.bio ?? ''}
-    `
-      .toLowerCase()
-      .trim();
-
-    const matchesSearch = search
-      ? text.includes(search.toLowerCase().trim())
-      : true;
-
-    const matchesCity = cityFilter
-      ? (p.city ?? '').toLowerCase().includes(cityFilter.toLowerCase().trim())
-      : true;
-
-    return matchesSearch && matchesCity;
-  });
 </script>
 
 <svelte:head>
-  <title>Encuentra contratistas | Gold Construction</title>
+  <title>Perfiles de trabajador | Panel admin</title>
 </svelte:head>
 
 <section class="relative min-h-[80vh] bg-slate-950 text-slate-50">
-  <!-- luces fondo -->
+  <!-- luces -->
   <div
-    class="pointer-events-none absolute -top-24 left-0 h-64 w-64 rounded-full bg-amber-400/25 blur-3xl"
+    class="pointer-events-none absolute -top-24 left-0 h-64 w-64 rounded-full bg-emerald-400/25 blur-3xl"
   ></div>
   <div
     class="pointer-events-none absolute -bottom-28 right-0 h-72 w-72 rounded-full bg-sky-400/25 blur-3xl"
   ></div>
 
-  <div class="relative max-w-6xl mx-auto px-4 py-10 md:py-12 space-y-8">
-    <!-- Encabezado -->
-    <header class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+  <div class="relative max-w-6xl mx-auto px-4 py-10 md:py-12 space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
       <div>
-        <p class="text-xs uppercase tracking-[0.25em] text-amber-300 mb-2">
-          FIND CONTRACTOR
+        <p class="text-xs uppercase tracking-[0.25em] text-emerald-300 mb-2">
+          ADMIN · WORKERS
         </p>
-        <h1 class="text-3xl md:text-4xl font-extrabold mb-2">
-          Encuentra contratistas de confianza
+        <h1 class="text-2xl md:text-3xl font-extrabold mb-1">
+          Perfiles de trabajador
         </h1>
-        <p class="text-sm md:text-base text-slate-200 max-w-2xl">
-          Explora perfiles de trabajadores especializados en drywall, pintura,
-          insulación y más. Todos trabajan en Canadá y entienden los estándares
-          locales de construcción.
+        <p class="text-sm text-slate-200 max-w-2xl">
+          Aquí puedes revisar los perfiles creados por los trabajadores en la plataforma
+          y decidir cuáles se muestran en la página pública de contratistas.
         </p>
       </div>
 
-      <div class="text-xs text-slate-300 bg-slate-900/70 border border-slate-700 rounded-2xl px-4 py-3">
-        <p class="font-semibold text-slate-100 mb-1">¿Eres trabajador?</p>
-        <p class="mb-2">
-          Crea tu perfil profesional para aparecer en este listado y recibir
-          solicitudes de clientes.
-        </p>
-        <a
-          href="/auth/register"
-          class="inline-flex items-center justify-center rounded-full bg-amber-400 text-slate-950 px-3 py-1.5 text-[11px] font-semibold hover:bg-amber-300 transition"
-        >
-          Crear perfil de trabajador
-        </a>
-      </div>
-    </header>
-
-    <!-- Barra de filtros -->
-    <div
-      class="rounded-2xl border border-slate-700 bg-slate-900/80 px-4 py-3 md:px-5 md:py-4 flex flex-col md:flex-row md:items-center gap-3 text-xs md:text-sm"
-    >
-      <div class="flex-1 flex flex-col md:flex-row gap-3">
-        <div class="flex-1">
-          <label class="block text-[11px] font-semibold mb-1 text-slate-300">
-            Buscar por nombre, servicio o descripción
-          </label>
-          <input
-            type="text"
-            bind:value={search}
-            placeholder="Ej. drywall, pintura, Juan..."
-            class="w-full rounded-lg border border-slate-600/70 bg-slate-950/80 px-3 py-1.5 text-xs md:text-sm text-slate-50 placeholder:text-slate-500 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-300/60"
-          />
-        </div>
-
-        <div class="w-full md:w-64">
-          <label class="block text-[11px] font-semibold mb-1 text-slate-300">
-            Ciudad (filtro rápido)
-          </label>
-          <input
-            type="text"
-            bind:value={cityFilter}
-            placeholder="Toronto, Vancouver..."
-            class="w-full rounded-lg border border-slate-600/70 bg-slate-950/80 px-3 py-1.5 text-xs md:text-sm text-slate-50 placeholder:text-slate-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-300/60"
-          />
-        </div>
-      </div>
-
-      <div class="text-[11px] text-slate-400 md:self-end">
-        {#if filteredProfiles.length === 0}
-          0 resultados
-        {:else}
-          {filteredProfiles.length} contratista{filteredProfiles.length === 1 ? '' : 's'} encontrados
-        {/if}
-      </div>
+      <a
+        href="/admin"
+        class="text-xs rounded-full border border-slate-600 px-3 py-1.5 text-slate-200 hover:border-sky-400 hover:text-sky-200"
+      >
+        ← Volver al panel
+      </a>
     </div>
 
-    <!-- Mensaje de error si el load falló -->
-    {#if data.loadError}
-      <div
-        class="rounded-2xl border border-red-500/60 bg-red-500/10 px-5 py-3 text-sm text-red-100"
-      >
-        Hubo un problema al cargar los perfiles de trabajador. Intenta de nuevo más tarde.
+    {#if data.error}
+      <div class="rounded-xl border border-red-400/70 bg-red-500/10 px-4 py-3 text-xs text-red-100">
+        {data.error}
       </div>
     {/if}
 
-    <!-- Listado -->
+    <!-- Contenido -->
     {#if data.profiles.length === 0}
       <div
-        class="mt-2 rounded-2xl border border-dashed border-slate-700 bg-slate-900/70 px-5 py-6 text-sm text-slate-300"
+        class="mt-4 rounded-2xl border border-dashed border-slate-700 bg-slate-900/70 px-5 py-6 text-sm text-slate-300"
       >
         <p class="font-semibold text-slate-100 mb-1">
-          Aún no hay perfiles publicados.
+          Aún no hay perfiles de trabajador.
         </p>
         <p class="text-xs text-slate-400">
-          En cuanto los trabajadores completen su perfil, podrás verlos aquí y
-          contactarlos directamente.
+          Cuando los usuarios completen su perfil como trabajador, aparecerán aquí
+          para que puedas revisarlos.
         </p>
       </div>
     {:else}
-      {#if filteredProfiles.length === 0}
-        <div
-          class="mt-2 rounded-2xl border border-dashed border-slate-700 bg-slate-900/70 px-5 py-6 text-sm text-slate-300"
-        >
-          <p class="font-semibold text-slate-100 mb-1">
-            No encontramos resultados con esos filtros.
+      <div
+        class="mt-4 rounded-2xl border border-slate-700 bg-slate-900/80 shadow-lg shadow-slate-950/60 overflow-hidden"
+      >
+        <div class="border-b border-slate-800 px-5 py-3 flex items-center justify-between">
+          <p class="text-xs font-semibold tracking-wide text-slate-200">
+            {data.profiles.length} perfil{data.profiles.length === 1 ? '' : 'es'} encontrados
           </p>
-          <p class="text-xs text-slate-400">
-            Prueba ajustando la búsqueda o limpiando los campos de filtro.
+          <p class="text-[11px] text-slate-500">
+            Solo los perfiles <span class="font-semibold text-emerald-300">aprobados</span> aparecerán
+            en la página pública “Find Contractor”.
           </p>
         </div>
-      {:else}
-        <div class="grid md:grid-cols-2 gap-4 md:gap-5">
-          {#each filteredProfiles as p}
-            <article
-              class="rounded-2xl border border-slate-700 bg-slate-900/80 px-4 py-4 md:px-5 md:py-5 shadow-lg shadow-slate-950/60 flex flex-col justify-between"
-            >
-              <div class="space-y-2">
-                <!-- Nombre y ciudad -->
+
+        <div class="divide-y divide-slate-800">
+          {#each data.profiles as p}
+            <article class="px-5 py-4 grid md:grid-cols-[2.2fr,1.4fr] gap-4 md:gap-6 text-xs">
+              <!-- Columna principal -->
+              <div class="space-y-1.5">
                 <div class="flex flex-wrap items-center gap-2">
-                  <h2 class="text-base font-semibold text-slate-50">
-                    {p.full_name || 'Nombre no disponible'}
+                  <h2 class="text-sm font-semibold text-slate-50">
+                    {p.full_name || 'Nombre no especificado'}
                   </h2>
                   {#if p.city}
                     <span
-                      class="inline-flex items-center rounded-full bg-slate-800 px-2.5 py-0.5 text-[11px] text-slate-200"
+                      class="inline-flex items-center rounded-full bg-slate-800 px-2.5 py-0.5 text-[10px] text-slate-200"
                     >
                       {p.city}
                     </span>
                   {/if}
                 </div>
 
-                <!-- Tags principales -->
                 <div class="flex flex-wrap gap-2 text-[11px] text-slate-300">
                   {#if p.worker_type}
                     <span class="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5">
@@ -206,7 +135,6 @@
                   {/if}
                 </div>
 
-                <!-- Servicios -->
                 {#if p.services && p.services.length > 0}
                   <p class="text-[11px] text-slate-300">
                     <span class="font-semibold text-slate-100">Servicios:</span>
@@ -214,7 +142,6 @@
                   </p>
                 {/if}
 
-                <!-- Certificaciones -->
                 {#if p.certs && p.certs.length > 0}
                   <p class="text-[11px] text-slate-300">
                     <span class="font-semibold text-slate-100">Certificaciones:</span>
@@ -222,7 +149,6 @@
                   </p>
                 {/if}
 
-                <!-- Bio -->
                 {#if p.bio}
                   <p class="mt-1 text-[11px] text-slate-300 line-clamp-3">
                     {p.bio}
@@ -230,32 +156,75 @@
                 {/if}
               </div>
 
-              <!-- Footer de la card -->
-              <div class="mt-3 flex items-center justify-between text-[11px] text-slate-400">
-                <div>
+              <!-- Columna lateral -->
+              <div class="flex flex-col justify-between gap-2 text-[11px] text-slate-400">
+                <div class="space-y-1">
                   {#if p.created_at}
                     <p>
-                      En la plataforma desde{' '}
+                      <span class="font-semibold text-slate-200">Creado:</span>
+                      {' '}
                       {new Date(p.created_at).toLocaleDateString()}
                     </p>
                   {/if}
+                  {#if p.updated_at}
+                    <p>
+                      <span class="font-semibold text-slate-200">Actualizado:</span>
+                      {' '}
+                      {new Date(p.updated_at).toLocaleDateString()}
+                    </p>
+                  {/if}
+                  <p class="text-[10px] text-slate-500">
+                    user_id: {p.user_id}
+                  </p>
+
+                  <!-- Estado de aprobación -->
+                  <p class="mt-2">
+                    {#if p.is_approved}
+                      <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] text-emerald-200 border border-emerald-400/50">
+                        ✔ Aprobado para aparecer en público
+                      </span>
+                    {:else}
+                      <span class="inline-flex items-center rounded-full bg-amber-500/10 px-2.5 py-0.5 text-[10px] text-amber-200 border border-amber-400/60">
+                        ⏳ Pendiente de aprobación
+                      </span>
+                    {/if}
+                  </p>
                 </div>
 
-                <div class="flex gap-2">
-                  <!-- En el futuro esto puede ir a /workers/[id] o abrir contacto -->
+                <div class="flex flex-wrap gap-2 pt-1">
+                  <!-- Botón para ver cómo se ve en la página pública (futuro: detalle) -->
                   <a
-                    href={`tel:${p.phone ?? ''}`}
-                    class="inline-flex items-center rounded-full border border-amber-400 px-3 py-1 font-semibold text-[11px] text-amber-200 hover:bg-amber-500/10 disabled:opacity-40"
-                    aria-disabled={!p.phone}
+                    href="/find-contractor"
+                    class="inline-flex items-center rounded-full border border-slate-600 px-3 py-1 text-[11px] text-slate-200 hover:border-sky-400 hover:text-sky-200"
+                    target="_blank"
                   >
-                    {p.phone ? 'Llamar' : 'Sin teléfono'}
+                    Ver en listado público
                   </a>
+
+                  <!-- Form para aprobar / despublicar -->
+                  <form method="POST" class="inline-flex">
+                    <input type="hidden" name="id" value={p.id} />
+                    <input
+                      type="hidden"
+                      name="approve"
+                      value={p.is_approved ? 'false' : 'true'}
+                    />
+                    <button
+                      type="submit"
+                      class="inline-flex items-center rounded-full border px-3 py-1 text-[11px] font-semibold
+                        {p.is_approved
+                          ? 'border-slate-500 text-slate-200 hover:bg-slate-800/60'
+                          : 'border-emerald-400 text-emerald-200 hover:bg-emerald-500/15'}"
+                    >
+                      {p.is_approved ? 'Ocultar del público' : 'Aprobar y mostrar'}
+                    </button>
+                  </form>
                 </div>
               </div>
             </article>
           {/each}
         </div>
-      {/if}
+      </div>
     {/if}
   </div>
 </section>
