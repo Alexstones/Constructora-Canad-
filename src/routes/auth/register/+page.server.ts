@@ -1,5 +1,25 @@
-import type { Actions } from './$types';
+// src/routes/auth/register/+page.server.ts
+import type { Actions, PageServerLoad } from './$types';
 import { supabase } from '$lib/server/supabaseClient';
+import { redirect } from '@sveltejs/kit';
+
+export const load: PageServerLoad = async ({ cookies, locals }) => {
+  const cookieEmail = cookies.get('session_email');
+  const cookieRole = cookies.get('session_role');
+
+  if (cookieEmail) {
+    if (cookieRole === 'admin') {
+      throw redirect(303, '/admin');
+    }
+    throw redirect(303, '/worker/dashboard');
+  }
+
+  if (locals.session?.user) {
+    throw redirect(303, '/');
+  }
+
+  return {};
+};
 
 export const actions: Actions = {
   default: async ({ request }) => {
@@ -45,21 +65,28 @@ export const actions: Actions = {
     const user = signUpData.user;
 
     // 2) Crear registro en profiles
-    const { error: profileError } = await supabase
-      .from('profiles')
-      .insert({
-        id: user.id,
-        full_name: name,
-        role,
-        created_at: new Date().toISOString()
-      });
+    const { error: profileError } = await supabase.from('profiles').insert({
+      id: user.id,
+      full_name: name,
+      role,
+      created_at: new Date().toISOString()
+    });
 
     if (profileError) {
       console.error('Error creando profile:', profileError);
       // no rompemos el registro, pero avisamos
     }
 
-    // En el flujo normal Supabase manda email de confirmación si lo configuras.
+    // 3) Registrar rol básico (no admin)
+    const { error: roleError } = await supabase.from('user_roles').insert({
+      user_id: user.id,
+      is_admin: false
+    });
+
+    if (roleError) {
+      console.error('Error creando user_roles:', roleError);
+    }
+
     return {
       success: true
     };

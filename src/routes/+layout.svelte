@@ -1,18 +1,19 @@
 <script lang="ts">
   import '../app.css';
   // esto viene del +layout.server.ts
-  export let data;
+  export let data: {
+    user: { id: string | null; email: string | null } | null;
+    userRole: { is_admin: boolean } | null;
+  };
 </script>
 
 <div class="min-h-screen flex flex-col bg-slate-100">
-
   <!-- NAVBAR -->
   <nav class="sticky top-0 z-30 bg-white/90 backdrop-blur border-b border-slate-200">
     <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
-
       <!-- LOGO NUEVO -->
       <a href="/" class="flex items-center gap-3">
-        <img 
+        <img
           src="/img/construccion.jpeg"
           alt="The Gold Construction"
           class="h-10 w-auto object-contain"
@@ -37,22 +38,31 @@
         <a href="/contact" class="hover:text-sky-700">Contacto</a>
       </div>
 
- <!-- NUEVO: botón/link para el marketplace de contratistas -->
-  <a href="/find-contractor" class="hover:text-sky-700">
-    Encuentra contratistas
-  </a>
-
-  
+      <!-- NUEVO: botón/link para el marketplace de contratistas -->
+      <a href="/find-contractor" class="hover:text-sky-700">
+        Encuentra contratistas
+      </a>
 
       <!-- ACCIONES DERECHA -->
       <div class="hidden md:flex items-center gap-3">
-        <!-- Botón para trabajadores (visible siempre) -->
-        <a
-          href="/worker"
-          class="text-xs font-semibold px-4 py-2 rounded-full bg-amber-500 text-slate-900 shadow hover:bg-amber-400"
-        >
-          ¿Eres trabajador?
-        </a>
+        <!-- Botón para trabajadores -->
+        {#if !data?.user}
+          <!-- NO logueado → mandar al registro como worker -->
+          <a
+            href="/auth/register?role=worker"
+            class="text-xs font-semibold px-4 py-2 rounded-full bg-amber-500 text-slate-900 shadow hover:bg-amber-400"
+          >
+            ¿Eres trabajador?
+          </a>
+        {:else if !data?.userRole?.is_admin}
+          <!-- Logueado como worker -->
+          <a
+            href="/worker"
+            class="text-xs font-semibold px-4 py-2 rounded-full bg-amber-500 text-slate-900 shadow hover:bg-amber-400"
+          >
+            ¿Eres trabajador?
+          </a>
+        {/if}
 
         {#if data?.user}
           <!-- Si está logueado -->
@@ -68,7 +78,7 @@
           {/if}
 
           <a
-            href="/worker/dashboard"
+            href="/account"
             class="text-xs font-semibold text-slate-700 hover:text-sky-700"
           >
             Mi cuenta
@@ -84,7 +94,7 @@
           </form>
         {:else}
           <!-- Cuando NO está logueado -->
-          <a 
+          <a
             href="/auth/login"
             class="text-xs font-semibold text-slate-700 hover:text-sky-700"
           >
@@ -100,7 +110,6 @@
         {/if}
       </div>
       <!-- FIN ACCIONES DERECHA -->
-
     </div>
   </nav>
 
@@ -112,7 +121,6 @@
   <!-- FOOTER -->
   <footer class="bg-slate-900 text-slate-200 mt-16">
     <div class="max-w-6xl mx-auto px-4 py-8 grid md:grid-cols-3 gap-8">
-
       <div>
         <h3 class="text-lg font-semibold mb-2">Gold Construction</h3>
         <p class="text-sm text-slate-400">
@@ -139,7 +147,6 @@
         <p>Lunes a Viernes: 8:00am – 6:00pm</p>
         <p>Sábados: 9:00am – 1:00pm</p>
       </div>
-
     </div>
 
     <p class="text-center text-xs text-slate-500 pb-5">

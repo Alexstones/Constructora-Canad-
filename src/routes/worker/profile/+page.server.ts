@@ -1,6 +1,7 @@
+// src/routes/worker/profile/+page.server.ts
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
-import { supabase } from '$lib/services/supabaseClient';
+import { supabase } from '$lib/server/supabaseClient'; // 👈 RUTA CORRECTA
 
 export const load: PageServerLoad = async ({ locals }) => {
   const user = locals.session?.user;
@@ -22,7 +23,7 @@ export const load: PageServerLoad = async ({ locals }) => {
   }
 
   return {
-    profile
+    profile: profile ?? null
   };
 };
 
@@ -104,7 +105,9 @@ export const actions: Actions = {
           phone,
           bio,
           years_experience: years_experience_raw,
-          worker_type
+          worker_type,
+          services,
+          certs
         }
       });
     }
@@ -147,7 +150,9 @@ export const actions: Actions = {
           phone,
           bio,
           years_experience: years_experience_raw,
-          worker_type
+          worker_type,
+          services,
+          certs
         }
       });
     }

@@ -2,9 +2,21 @@
 import type { Actions, PageServerLoad } from './$types';
 import { supabase } from '$lib/server/supabaseClient';
 import { fail, redirect } from '@sveltejs/kit';
+import type { Cookies } from '@sveltejs/kit';
+
+async function requireAdmin(cookies: Cookies) {
+  const email = cookies.get('session_email');
+  const role = cookies.get('session_role');
+
+  if (!email || role !== 'admin') {
+    throw redirect(303, '/auth/login');
+  }
+}
 
 // Cargar todos los trabajos
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ cookies }) => {
+  await requireAdmin(cookies);
+
   const { data: jobs, error } = await supabase
     .from('jobs')
     .select('*')
@@ -25,7 +37,9 @@ export const load: PageServerLoad = async () => {
 
 export const actions: Actions = {
   // Crear un nuevo trabajo
-  create: async ({ request }) => {
+  create: async ({ request, cookies }) => {
+    await requireAdmin(cookies);
+
     const form = await request.formData();
 
     const title = form.get('title')?.toString().trim() ?? '';
@@ -93,7 +107,9 @@ export const actions: Actions = {
   },
 
   // Cambiar estado
-  update_status: async ({ request }) => {
+  update_status: async ({ request, cookies }) => {
+    await requireAdmin(cookies);
+
     const form = await request.formData();
     const id = form.get('id')?.toString();
     const status = form.get('status')?.toString();
@@ -122,7 +138,9 @@ export const actions: Actions = {
   },
 
   // Eliminar
-  delete: async ({ request }) => {
+  delete: async ({ request, cookies }) => {
+    await requireAdmin(cookies);
+
     const form = await request.formData();
     const id = form.get('id')?.toString();
 

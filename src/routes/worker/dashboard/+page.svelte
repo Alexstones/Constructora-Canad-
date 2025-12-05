@@ -1,6 +1,15 @@
 <script lang="ts">
   export let data: {
-    availableJobs: any[];
+    availableJobs: {
+      id: string;
+      title: string | null;
+      city: string | null;
+      service_type: string | null;
+      budget_min: number | null;
+      budget_max: number | null;
+      description: string | null;
+      created_at: string | null;
+    }[];
     unlockedJobs: any[];
     stats: {
       openJobsCount: number;
@@ -15,7 +24,7 @@
 </svelte:head>
 
 <section class="relative min-h-[80vh] bg-slate-950 text-slate-50">
-  <!-- Luces de fondo (cambiadas para NO ser self-closing) -->
+  <!-- Luces de fondo (NO self-closing) -->
   <div class="pointer-events-none absolute -top-24 left-0 h-64 w-64 rounded-full bg-sky-500/25 blur-3xl"></div>
   <div class="pointer-events-none absolute -bottom-28 right-0 h-72 w-72 rounded-full bg-amber-400/25 blur-3xl"></div>
 
@@ -71,7 +80,7 @@
           {data.stats.unlockedJobsCount}
         </p>
         <p class="text-xs text-slate-400 mt-1">
-          Próximamente podrás ver aquí los trabajos que ya desblocaste.
+          Próximamente podrás ver aquí los trabajos que ya desbloqueaste.
         </p>
       </div>
 
@@ -114,7 +123,9 @@
         {:else}
           <div class="space-y-4">
             {#each data.availableJobs as job}
-              <article class="rounded-2xl border border-slate-700 bg-slate-900/70 p-4 hover:border-sky-500/60 hover:shadow-lg hover:shadow-sky-900/40 transition">
+              <article
+                class="rounded-2xl border border-slate-700 bg-slate-900/70 p-4 hover:border-sky-500/60 hover:shadow-lg hover:shadow-sky-900/40 transition"
+              >
                 <div class="flex items-start justify-between gap-3">
                   <div>
                     <h3 class="text-sm md:text-base font-semibold text-slate-50 mb-1">
@@ -127,7 +138,7 @@
                   <div class="text-right text-xs text-slate-300">
                     {#if job.budget_min || job.budget_max}
                       <p class="font-semibold text-amber-200">
-                        {job.budget_min ? `$${job.budget_min}` : '—'} 
+                        {job.budget_min ? `$${job.budget_min}` : '—'}
                         {job.budget_max ? ` - $${job.budget_max}` : ''}
                       </p>
                       <p class="text-[11px] text-slate-500">
@@ -141,9 +152,12 @@
                   {job.description}
                 </p>
 
-                <div class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-[11px]">
+                <div
+                  class="mt-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-[11px]"
+                >
                   <p class="text-slate-400">
-                    Creado: {job.created_at
+                    Creado:{' '}
+                    {job.created_at
                       ? new Date(job.created_at).toLocaleDateString()
                       : 'Sin fecha'}
                   </p>
@@ -178,8 +192,11 @@
             Más adelante mostraremos aquí tu calificación promedio, número de reviews
             y resumen de desempeño según proyectos completados.
           </p>
-          <div class="mt-3 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 text-xs text-slate-300">
-            ⭐ En una siguiente fase conectaremos este módulo con contratos cerrados y reviews de clientes.
+          <div
+            class="mt-3 rounded-xl border border-slate-700 bg-slate-950/60 px-4 py-3 text-xs text-slate-300"
+          >
+            ⭐ En una siguiente fase conectaremos este módulo con contratos cerrados y reviews de
+            clientes.
           </div>
         </div>
 

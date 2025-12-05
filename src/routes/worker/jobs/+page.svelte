@@ -7,8 +7,8 @@
       services: string[] | null;
     } | null;
     jobs: {
-      id: number;
-      quote_id: number | null;
+      id: string;                    // 👈 uuid
+      quote_id: string | null;       // si en tu tabla sigue siendo bigint, puedes dejarlo como number | null
       client_email: string;
       city: string | null;
       service: string | null;
@@ -57,7 +57,9 @@
     </div>
 
     {#if data.profile}
-      <div class="text-[11px] text-slate-400 border border-slate-700 bg-slate-900/80 rounded-xl px-4 py-3">
+      <div
+        class="text-[11px] text-slate-400 border border-slate-700 bg-slate-900/80 rounded-xl px-4 py-3"
+      >
         <p>
           <span class="font-semibold text-slate-200">Filtros activos:</span>
           {' '}
@@ -71,13 +73,17 @@
     {/if}
 
     {#if data.error}
-      <div class="rounded-xl border border-red-400/70 bg-red-500/10 px-4 py-3 text-xs text-red-100">
+      <div
+        class="rounded-xl border border-red-400/70 bg-red-500/10 px-4 py-3 text-xs text-red-100"
+      >
         {data.error}
       </div>
     {/if}
 
     {#if data.jobs.length === 0}
-      <div class="mt-4 rounded-2xl border border-dashed border-slate-700 bg-slate-900/70 px-5 py-6 text-sm text-slate-300">
+      <div
+        class="mt-4 rounded-2xl border border-dashed border-slate-700 bg-slate-900/70 px-5 py-6 text-sm text-slate-300"
+      >
         <p class="font-semibold text-slate-100 mb-1">
           No hay trabajos disponibles que coincidan con tu perfil por ahora.
         </p>
@@ -88,7 +94,9 @@
     {:else}
       <div class="space-y-4">
         {#each data.jobs as job}
-          <article class="rounded-2xl border border-slate-700 bg-slate-900/80 px-5 py-4 text-xs shadow-lg shadow-slate-950/60">
+          <article
+            class="rounded-2xl border border-slate-700 bg-slate-900/80 px-5 py-4 text-xs shadow-lg shadow-slate-950/60"
+          >
             <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
               <div class="space-y-1.5">
                 <h2 class="text-sm font-semibold text-slate-50">
@@ -133,7 +141,9 @@
                 </p>
 
                 {#if job.is_unlocked_for_worker}
-                  <span class="inline-flex items-center rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] text-emerald-200 border border-emerald-400/60">
+                  <span
+                    class="inline-flex items-center rounded-full bg-emerald-500/15 px-3 py-1 text-[11px] text-emerald-200 border border-emerald-400/60"
+                  >
                     ✔ Información desbloqueada
                   </span>
                 {:else}

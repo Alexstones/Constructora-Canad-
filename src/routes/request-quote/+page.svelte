@@ -226,7 +226,7 @@
             Si te sientes más cómodo explicando tu proyecto por llamada, también podemos ayudarte así:
           </p>
           <p class="font-extrabold text-lg text-amber-600 border-b border-amber-300 pb-1">
-            Tel: +1 (000) 000-0000
+            Tel: +1  (437) 214-7837
           </p>
           <p class="text-xs text-slate-500 mt-2">
             Lunes a Viernes: 8:00am – 6:00pm · Sábados: 9:00am – 1:00pm

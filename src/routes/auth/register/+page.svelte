@@ -25,8 +25,12 @@
 
     <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-7">
       {#if form?.success}
-        <div class="mb-4 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs text-emerald-800">
-          ✅ Registro enviado. Más adelante conectaremos esto con el sistema de sesión.
+        <div
+          class="mb-4 rounded-md border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs text-emerald-800"
+        >
+          ✅ Cuenta creada correctamente. Ahora puedes
+          <a href="/auth/login" class="font-semibold underline">iniciar sesión</a>
+          con tu correo y contraseña.
         </div>
       {/if}
 

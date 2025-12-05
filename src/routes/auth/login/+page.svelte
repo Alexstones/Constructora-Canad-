@@ -1,5 +1,8 @@
 <script lang="ts">
-  export let form;
+  export let form: {
+    email?: string;
+    message?: string;
+  };
 </script>
 
 <svelte:head>
@@ -16,8 +19,14 @@
 
     <form method="POST" class="space-y-4">
       <div class="space-y-1">
-        <label class="text-xs font-medium text-slate-700">Correo electrónico</label>
+        <label
+          for="email"
+          class="text-xs font-medium text-slate-700"
+        >
+          Correo electrónico
+        </label>
         <input
+          id="email"
           name="email"
           type="email"
           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
@@ -27,8 +36,14 @@
       </div>
 
       <div class="space-y-1">
-        <label class="text-xs font-medium text-slate-700">Contraseña</label>
+        <label
+          for="password"
+          class="text-xs font-medium text-slate-700"
+        >
+          Contraseña
+        </label>
         <input
+          id="password"
           name="password"
           type="password"
           class="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
@@ -45,4 +60,3 @@
     </form>
   </div>
 </section>
-
